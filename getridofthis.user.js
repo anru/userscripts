@@ -3,7 +3,7 @@
 // @description Removal of not need elements userscript
 // @author arublev
 // @license MIT
-// @version 1.0
+// @version 1.1
 // ==/UserScript==
 
 // wrap the script in a closure (opera, ie)
@@ -49,6 +49,15 @@
     function removeNodes(qs) {
         return qsmap(qs, removeNode);
     }
+    
+    function removeDeferred(qs) {
+        var timerId = window.setInterval(function() {
+            if (document.querySelectorAll(qs).length > 0) {
+                window.clearInterval(timerId);
+                removeNodes(qs);
+            }
+        }, 1000);
+    }
 
     // additional url check. 
     // Google Chrome do not treat @match as intended sometimes.
@@ -58,10 +67,9 @@
     }
     
     if (/grooveshark.com/.test(w.location.href)) {
-        removeNodes('.flash');
+        removeDeferred('.flash');
+        removeNodes('.page_column_capital');
     }
     
     removeNodes('[id^=google_ads]');
-    
-    console.info('cleared')
 })(window);
